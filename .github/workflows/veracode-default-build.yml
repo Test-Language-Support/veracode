@@ -57,6 +57,10 @@ jobs:
         source /etc/profile.d/rvm.sh
         rvm pkg install openssl
         rvm install ruby-${{ inputs.ruby_version }}
+        gem install bundler -v ${{ inputs.bundle_version }}
+        gem install veracode
+        ${{ inputs.build_predependency_command }}
+        bundle install
 
     - name: Fetch Dependencies
       if: ${{ !contains(inputs.event_name, 'ruby') }}
@@ -80,12 +84,12 @@ jobs:
         cd $cliFileName
         export PATH="veracode-helper/helper/cli/$cliFileName:$PATH"
         cd $working_path
-        if [[ "${{ inputs.event_name }}" == *"ruby"* ]]; then
-          gem install bundler -v ${{ inputs.bundle_version }}
-          gem install veracode
-          ${{ inputs.build_predependency_command }}
-          bundle install
-        fi
+        #if [[ "${{ inputs.event_name }}" == *"ruby"* ]]; then
+        #  gem install bundler -v ${{ inputs.bundle_version }}
+        #  gem install veracode
+        #  ${{ inputs.build_predependency_command }}
+        #  bundle install
+        #fi
         veracode package --source . --output veracode-artifacts --trust
 
     - name: Package error
