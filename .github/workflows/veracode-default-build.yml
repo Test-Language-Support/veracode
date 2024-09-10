@@ -49,25 +49,6 @@ jobs:
       with:
         path: 'veracode-helper'
 
-    #- name: Setup for Ruby
-    #  if: contains(${{ inputs.event_name }}, 'ruby')
-    #  id: ruby_setup
-    #  shell: bash
-    #  run: |
-    #    source /etc/profile.d/rvm.sh
-    #    rvm pkg install openssl
-    #    rvm install ruby-${{ inputs.ruby_version }}
-    #    gem install bundler -v ${{ inputs.bundle_version }}
-    #    gem install veracode
-    #    ${{ inputs.build_predependency_command }}
-    #    bundle install
-
-    - name: Fetch Dependencies
-      if: ${{ !contains(inputs.event_name, 'ruby') }}
-      id: fetch_dependencies
-      run: |
-        ${{ inputs.build_predependency_command }}
-
     - name: Package the application
       id: application_package
       shell: bash
@@ -75,6 +56,9 @@ jobs:
         VERACODE_API_KEY_ID: '${{ secrets.VERACODE_API_ID }}'
         VERACODE_API_KEY_SECRET: '${{ secrets.VERACODE_API_KEY }}'
       run: |
+        if [ ! -z "$inputs.build_predependency_command"]; then
+          ${{ inputs.build_predependency_command }}
+        fi
         if [[ "${{ inputs.event_name }}" == *"ruby"* ]]; then
           source /etc/profile.d/rvm.sh
           rvm pkg install openssl
@@ -92,7 +76,6 @@ jobs:
         if [[ "${{ inputs.event_name }}" == *"ruby"* ]]; then
           gem install bundler -v ${{ inputs.bundle_version }}
           gem install veracode
-          ${{ inputs.build_predependency_command }}
           bundle install
         fi
         veracode package --source . --output veracode-artifacts --trust
