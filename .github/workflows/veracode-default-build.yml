@@ -75,6 +75,11 @@ jobs:
         VERACODE_API_KEY_ID: '${{ secrets.VERACODE_API_ID }}'
         VERACODE_API_KEY_SECRET: '${{ secrets.VERACODE_API_KEY }}'
       run: |
+        if [[ "${{ inputs.event_name }}" == *"ruby"* ]]; then
+          source /etc/profile.d/rvm.sh
+          rvm pkg install openssl
+          rvm install ruby-${{ inputs.ruby_version }}
+        fi
         working_path=`pwd`
         echo "working_dir=$working_path" >> "$GITHUB_OUTPUT"
         cd veracode-helper/helper/cli
@@ -85,9 +90,6 @@ jobs:
         export PATH="veracode-helper/helper/cli/$cliFileName:$PATH"
         cd $working_path
         if [[ "${{ inputs.event_name }}" == *"ruby"* ]]; then
-          source /etc/profile.d/rvm.sh
-          rvm pkg install openssl
-          rvm install ruby-${{ inputs.ruby_version }}
           gem install bundler -v ${{ inputs.bundle_version }}
           gem install veracode
           ${{ inputs.build_predependency_command }}
