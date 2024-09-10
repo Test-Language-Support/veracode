@@ -56,9 +56,7 @@ jobs:
         VERACODE_API_KEY_ID: '${{ secrets.VERACODE_API_ID }}'
         VERACODE_API_KEY_SECRET: '${{ secrets.VERACODE_API_KEY }}'
       run: |
-        if [ ! -z "$inputs.build_predependency_command"]; then
-          ${{ inputs.build_predependency_command }}
-        fi
+        [ ! -z "$inputs.build_predependency_command"] && ${{ inputs.build_predependency_command }}
         if [[ "${{ inputs.event_name }}" == *"ruby"* ]]; then
           source /etc/profile.d/rvm.sh
           rvm pkg install openssl
