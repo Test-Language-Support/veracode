@@ -7,6 +7,7 @@ actions:
       runs_on:
       packager_image:
       predependency_command: |
+      
   veracode_sca_scan:
     build:
       runs_on:
