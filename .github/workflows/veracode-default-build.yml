@@ -44,6 +44,7 @@ jobs:
         repository: ${{ inputs.repository }}
         ref: ${{ inputs.ref }}
         token: ${{ inputs.token }}
+        path: 'repository-code'
 
     - uses: actions/checkout@v4
       with:
@@ -75,7 +76,7 @@ jobs:
         tar -zxvf $cliFile
         cd $cliFileName
         export PATH="veracode-helper/helper/cli/$cliFileName:$PATH"
-        cd $working_path
+        cd "$working_path/repository-code"
         if [[ "${{ inputs.event_name }}" == *"ruby"* ]]; then
           gem install bundler -v ${{ inputs.bundle_version }}
           gem install veracode
@@ -91,5 +92,5 @@ jobs:
     - uses: actions/upload-artifact@v4
       with:
         name: veracode-artifact
-        path: "${{ steps.application_package.outputs.working_dir }}/veracode-artifacts/*"
+        path: "${{ steps.application_package.outputs.working_dir }}/repository-code/veracode-artifacts/*"
         if-no-files-found: error
